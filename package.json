@@ -1,0 +1,38 @@
+{
+  "name": "onboarding-backend",
+  "version": "1.0.0",
+  "description": "Backend API for onboarding questionnaire",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "cors": "^2.8.5",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.0",
+    "compression": "^1.8.0",
+    "dotenv": "^17.0.1",
+    "mongoose": "^8.16.1",
+    "winston": "^3.17.0",
+    "express-validator": "^7.2.1",
+    "joi": "^17.13.3",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/cors": "^2.8.19",
+    "@types/morgan": "^1.9.10",
+    "@types/compression": "^1.8.1",
+    "@types/node": "^24.0.10",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.8.3",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.1.10"
+  },
+  "keywords": ["express", "typescript", "mongodb", "onboarding"],
+  "author": "",
+  "license": "ISC"
+}
