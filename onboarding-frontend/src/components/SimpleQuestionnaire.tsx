@@ -155,7 +155,7 @@ const SimpleQuestionnaire: React.FC = () => {
   if (isCompleted) {
     return (
       <div style={{ textAlign: 'center', padding: '4rem' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '2rem' }}>Thank You! 🎉</h1>
+        <h1 style={{ fontSize: '3rem', marginBottom: '2rem' }}>Thank You!</h1>
         <p style={{ fontSize: '1.5rem' }}>Your onboarding has been completed successfully.</p>
       </div>
     )

@@ -71,7 +71,7 @@ export class OnboardingController {
                 question6_additionalExperience: question6_additionalExperience || ''
             }
 
-            logger.info('📝 Onboarding Data Created:', {
+            logger.info('Onboarding Data Created:', {
                 userId,
                 username: generatedUsername,
                 responses: onboardingData.responses
@@ -83,9 +83,9 @@ export class OnboardingController {
             let savedOnboarding = null
             try {
                 savedOnboarding = await onboarding.save()
-                logger.info('✅ Onboarding saved to database successfully', { onboardingId: savedOnboarding._id })
+                logger.info('Onboarding saved to database successfully', { onboardingId: savedOnboarding._id })
             } catch (dbError) {
-                logger.warn('⚠️ Database save failed, continuing without persistence', { error: dbError })
+                logger.warn('Database save failed, continuing without persistence', { error: dbError })
                 // Create a mock response for when DB is not available
                 savedOnboarding = {
                     _id: 'temp-id-' + Date.now(),
@@ -100,7 +100,7 @@ export class OnboardingController {
                 userId: savedOnboarding.userId || userId
             }
 
-            logger.info('✅ Sending success response:', response)
+            logger.info('Sending success response:', response)
 
             res.status(201).json(response)
 
@@ -244,7 +244,7 @@ export class OnboardingController {
                 })
             )
 
-            logger.info(`📁 Database info retrieved: ${collections.length} collections found`)
+            logger.info(`Database info retrieved: ${collections.length} collections found`)
 
             res.status(200).json({
                 database: db.databaseName,
@@ -269,7 +269,7 @@ export class OnboardingController {
                 .sort({ createdAt: -1 })
                 .limit(50) // Limit to last 50 responses
 
-            logger.info(`📋 Retrieved ${onboardings.length} onboarding responses`)
+            logger.info(`Retrieved ${onboardings.length} onboarding responses`)
 
             res.status(200).json({
                 total: onboardings.length,
