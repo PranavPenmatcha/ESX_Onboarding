@@ -154,182 +154,175 @@ const SimpleQuestionnaire: React.FC = () => {
 
   if (isCompleted) {
     return (
-      <div style={{ textAlign: 'center', padding: '4rem' }}>
-        <h1 style={{ fontSize: '3rem', marginBottom: '2rem' }}>Thank You! 🎉</h1>
-        <p style={{ fontSize: '1.5rem' }}>Your onboarding has been completed successfully.</p>
+      <div className="min-h-screen bg-black text-white">
+        {/* TradeX Top Bar */}
+        <div className="bg-black border-b border-gray-800 px-6 py-4">
+          <div className="text-2xl font-bold" style={{ color: '#e7cfa1' }}>TradeX</div>
+        </div>
+
+        <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold mb-4" style={{ color: '#e7cfa1' }}>Thank You! 🎉</h1>
+            <p className="text-xl text-gray-300">Your onboarding has been completed successfully.</p>
+          </div>
+        </div>
       </div>
     )
   }
 
-  const containerStyle: React.CSSProperties = {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '2rem'
-  }
 
-  const headerStyle: React.CSSProperties = {
-    textAlign: 'center',
-    marginBottom: '3rem'
-  }
-
-  const progressBarStyle: React.CSSProperties = {
-    width: '100%',
-    height: '8px',
-    backgroundColor: '#374151',
-    borderRadius: '4px',
-    marginBottom: '2rem'
-  }
-
-  const progressFillStyle: React.CSSProperties = {
-    width: `${progress}%`,
-    height: '100%',
-    backgroundColor: '#ffffff',
-    borderRadius: '4px',
-    transition: 'width 0.5s ease'
-  }
-
-  const questionCardStyle: React.CSSProperties = {
-    backgroundColor: '#1f2937',
-    padding: '2rem',
-    borderRadius: '8px',
-    marginBottom: '2rem'
-  }
-
-  const buttonStyle: React.CSSProperties = {
-    backgroundColor: '#ffffff',
-    color: '#000000',
-    padding: '12px 24px',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    float: 'right'
-  }
-
-  const disabledButtonStyle: React.CSSProperties = {
-    ...buttonStyle,
-    opacity: 0.5,
-    cursor: 'not-allowed'
-  }
 
   return (
-    <div style={containerStyle}>
-      {/* Header */}
-      <div style={headerStyle}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', color: '#f97316' }}>
-          TradeX
-        </h1>
-        <h2 style={{ fontSize: '2rem', marginBottom: '1rem' }}>
-          Personalize Your Trading Experience
-        </h2>
-        <p style={{ fontSize: '1.2rem', color: '#d1d5db' }}>
-          Answer a few questions to tailor your trading experience and get the most out of TradeX.
-        </p>
+    <div className="min-h-screen bg-black text-white">
+      {/* TradeX Top Bar */}
+      <div className="bg-black border-b border-gray-800 px-6 py-4">
+        <div className="text-2xl font-bold" style={{ color: '#e7cfa1' }}>TradeX</div>
       </div>
 
-      {/* Progress */}
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-          <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>
-            Question {currentQuestion + 1}/{questions.length}
-          </span>
+      {/* Main Content */}
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4" style={{ color: '#e7cfa1' }}>
+            Personalize Your Trading Experience
+          </h1>
+          <p className="text-xl text-gray-300">
+            Answer a few questions to tailor your trading experience and get the most out of TradeX.
+          </p>
         </div>
-        <div style={progressBarStyle}>
-          <div style={progressFillStyle}></div>
+
+        {/* Progress */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <span className="text-lg font-medium" style={{ color: '#e7cfa1' }}>
+              Question {currentQuestion + 1}/{questions.length}
+            </span>
+          </div>
+          <div className="w-full bg-gray-800 rounded-full h-2">
+            <div
+              className="h-2 rounded-full transition-all duration-500 ease-out"
+              style={{
+                width: `${progress}%`,
+                backgroundColor: '#e7cfa1'
+              }}
+            />
+          </div>
         </div>
-      </div>
 
-      {/* Question */}
-      <div style={questionCardStyle}>
-        <h3 style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>
-          {question.id}. {question.title}
-        </h3>
+        {/* Question Card */}
+        <div className="bg-gray-900 rounded-lg p-8 border border-gray-800">
+          <h2 className="text-2xl font-bold mb-8" style={{ color: '#e7cfa1' }}>
+            {question.id}. {question.title}
+          </h2>
 
-        {question.type === 'single' && question.options && (
-          <div>
-            {question.options.map((option) => (
-              <label key={option} style={{ display: 'block', marginBottom: '1rem', cursor: 'pointer' }}>
+          {question.type === 'single' && question.options && (
+            <div className="space-y-4">
+              {question.options.map((option) => (
+                <label
+                  key={option}
+                  className="flex items-center space-x-3 cursor-pointer group"
+                >
+                  <input
+                    type="radio"
+                    name={`question-${question.id}`}
+                    value={option}
+                    checked={answers[question.field] === option}
+                    onChange={() => handleSingleChoice(option)}
+                    className="w-5 h-5 bg-gray-700 border-gray-600 focus:ring-2"
+                    style={{
+                      accentColor: '#e7cfa1',
+                      '--tw-ring-color': '#e7cfa1'
+                    }}
+                  />
+                  <span className="text-lg text-white group-hover:opacity-80 transition-opacity">
+                    {option}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
+
+          {question.type === 'multiple' && question.options && (
+            <div className="space-y-4">
+              {question.options.map((option) => (
+                <label
+                  key={option}
+                  className="flex items-center space-x-3 cursor-pointer group"
+                >
+                  <input
+                    type="checkbox"
+                    value={option}
+                    checked={Array.isArray(answers[question.field]) && (answers[question.field] as string[]).includes(option)}
+                    onChange={() => handleMultipleChoice(option)}
+                    className="w-5 h-5 bg-gray-700 border-gray-600 rounded focus:ring-2"
+                    style={{
+                      accentColor: '#e7cfa1',
+                      '--tw-ring-color': '#e7cfa1'
+                    }}
+                  />
+                  <span className="text-lg text-white group-hover:opacity-80 transition-opacity">
+                    {option}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
+
+          {question.type === 'text' && (
+            <div>
+              {question.field === 'username' ? (
                 <input
-                  type="radio"
-                  name={`question-${question.id}`}
-                  value={option}
-                  checked={answers[question.field] === option}
-                  onChange={() => handleSingleChoice(option)}
-                  style={{ marginRight: '12px' }}
+                  type="text"
+                  value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
+                  onChange={(e) => handleAnswerChange(question.field, e.target.value)}
+                  placeholder={question.placeholder || "Enter your username..."}
+                  className="w-full p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent"
+                  style={{
+                    '--tw-ring-color': '#e7cfa1'
+                  }}
                 />
-                <span style={{ fontSize: '1.1rem' }}>{option}</span>
-              </label>
-            ))}
-          </div>
-        )}
+              ) : (
+                <>
+                  <textarea
+                    value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
+                    onChange={(e) => handleAnswerChange(question.field, e.target.value)}
+                    placeholder={question.placeholder || "Enter your response..."}
+                    className="w-full h-32 p-4 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                    style={{
+                      '--tw-ring-color': '#e7cfa1'
+                    }}
+                    maxLength={1000}
+                  />
+                  <div className="text-right text-sm text-gray-400 mt-2">
+                    {typeof answers[question.field] === 'string' ? (answers[question.field] as string).length : 0}/1000 characters
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
-        {question.type === 'multiple' && question.options && (
-          <div>
-            {question.options.map((option) => (
-              <label key={option} style={{ display: 'block', marginBottom: '1rem', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  value={option}
-                  checked={Array.isArray(answers[question.field]) && (answers[question.field] as string[]).includes(option)}
-                  onChange={() => handleMultipleChoice(option)}
-                  style={{ marginRight: '12px' }}
-                />
-                <span style={{ fontSize: '1.1rem' }}>{option}</span>
-              </label>
-            ))}
-          </div>
-        )}
-
-        {question.type === 'text' && (
-          <>
-            {question.field === 'username' ? (
-              <input
-                type="text"
-                value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
-                onChange={(e) => handleAnswerChange(question.field, e.target.value)}
-                placeholder="Enter your username..."
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  backgroundColor: '#374151',
-                  border: '1px solid #4b5563',
-                  borderRadius: '6px',
-                  color: '#ffffff',
-                  fontSize: '16px'
-                }}
-              />
-            ) : (
-              <textarea
-                value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
-                onChange={(e) => handleAnswerChange(question.field, e.target.value)}
-                placeholder={question.placeholder || "Enter your response..."}
-                style={{
-                  width: '100%',
-                  height: '120px',
-                  padding: '12px',
-                  backgroundColor: '#374151',
-                  border: '1px solid #4b5563',
-                  borderRadius: '6px',
-                  color: '#ffffff',
-                  fontSize: '16px',
-                  resize: 'none'
-                }}
-              />
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Next Button */}
-      <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-        <button
-          onClick={handleNext}
-          disabled={!isCurrentQuestionAnswered() || isSubmitting}
-          style={!isCurrentQuestionAnswered() || isSubmitting ? disabledButtonStyle : buttonStyle}
-        >
-          {isSubmitting ? 'Submitting...' : currentQuestion === questions.length - 1 ? 'Complete' : 'Next →'}
-        </button>
+        {/* Next Button */}
+        <div className="flex justify-end mt-8">
+          <button
+            onClick={handleNext}
+            disabled={!isCurrentQuestionAnswered() || isSubmitting}
+            className="px-8 py-3 rounded-lg font-medium flex items-center space-x-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              backgroundColor: '#e7cfa1',
+              color: '#000000'
+            }}
+          >
+            <span>
+              {isSubmitting
+                ? 'Submitting...'
+                : currentQuestion === questions.length - 1
+                  ? 'Complete'
+                  : 'Next →'
+              }
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )
