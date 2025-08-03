@@ -12,31 +12,6 @@ A minimal Express.js backend with TypeScript for handling onboarding questionnai
 - **Security** middleware (Helmet, CORS)
 - **5-Question Onboarding** (Question 2 excluded for MVP)
 
-## Project Structure
-
-```
-onboarding-backend/
-├── src/
-│   ├── config/
-│   │   └── environment.ts
-│   ├── api/
-│   │   ├── controllers/
-│   │   │   └── onboardingController.ts
-│   │   ├── routes/
-│   │   │   └── onboardingRoutes.ts
-│   │   └── middlewares/
-│   ├── models/
-│   │   └── onboarding.ts
-│   ├── utils/
-│   │   └── helpers/
-│   │       └── logger.ts
-│   ├── app.ts
-│   └── index.ts
-├── logs/
-├── package.json
-├── tsconfig.json
-└── .env
-```
 
 ## Onboarding Questions (MVP - 5 Questions)
 
@@ -112,18 +87,6 @@ curl -X POST http://localhost:9091/api/onboarding \
 # Get statistics
 curl -X GET http://localhost:9091/api/onboarding/stats
 ```
-
-## Key Features Implemented
-
-- ✅ Onboarding model with 5 questions (excluding Q2 for MVP)
-- ✅ Added "Milestones" to trading style options
-- ✅ Replaced "Moneyline" with "Value Investing" (no betting connotation)
-- ✅ Random userId generation for MVP
-- ✅ Input validation and error handling
-- ✅ MongoDB integration with proper schema
-- ✅ RESTful API design
-- ✅ Comprehensive logging
-- ✅ Security middleware
 
 ## Notes
 

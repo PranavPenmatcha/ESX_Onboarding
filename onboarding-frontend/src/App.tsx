@@ -1,5 +1,4 @@
 import SimpleQuestionnaire from './components/SimpleQuestionnaire'
-import './App.css'
 
 function App() {
   return (
