@@ -1,9 +1,9 @@
 export interface OnboardingData {
-  username: string
-  question1_tradingExperience: string
-  question2_tradingGoals: string
-  question3_tradingStyle: string[]
-  question4_informationSources: string[]
-  question5_tradingFrequency: string
-  question6_additionalExperience: string
+  welcome: string
+  question1_favoriteSports: string[]
+  question2_favoriteTeamsPlayers: string
+  question3_preferredMarkets: string[]
+  question4_usefulInformation: string[]
+  question5_toolsToLearn: string[]
+  question6_additionalInformation: string
 }

@@ -20,50 +20,66 @@ const handleValidationErrors = (req: Request, res: Response, next: NextFunction)
 
 // Validation rules for onboarding submission
 const onboardingValidationRules = [
-    body('question1_tradingExperience')
-        .isIn(['Beginner', 'Intermediate', 'Advanced', 'Expert'])
-        .withMessage('Invalid trading experience level'),
-    
-    body('question3_tradingStyle')
+    body('question1_favoriteSports')
         .isArray({ min: 1 })
-        .withMessage('At least one trading style must be selected')
+        .withMessage('At least one favorite sport must be selected')
         .custom((value) => {
-            const validStyles = [
-                'Day Trading', 'Swing Trading', 'Position Trading', 'Scalping',
-                'Arbitrage', 'Market Making', 'Milestones', 'Value Investing'
+            const validSports = [
+                'Basketball', 'Football', 'Baseball', 'Soccer/World Cup',
+                'Tennis', 'Esports/Gaming', 'Other'
             ]
-            return value.every((style: string) => validStyles.includes(style))
+            return value.every((sport: string) => validSports.includes(sport))
         })
-        .withMessage('Invalid trading style selected'),
-    
-    body('question4_informationSources')
+        .withMessage('Invalid sport selected'),
+
+    body('question2_favoriteTeamsPlayers')
+        .optional()
+        .isLength({ max: 500 })
+        .withMessage('Favorite teams/players must be less than 500 characters'),
+
+    body('question3_preferredMarkets')
+        .isArray({ min: 1 })
+        .withMessage('At least one preferred market must be selected')
+        .custom((value) => {
+            const validMarkets = [
+                'Moneyline', 'Player Props', 'Futures', 'Heads-up markets'
+            ]
+            return value.every((market: string) => validMarkets.includes(market))
+        })
+        .withMessage('Invalid market selected'),
+
+    body('question4_usefulInformation')
         .isArray({ min: 1 })
         .withMessage('At least one information source must be selected')
         .custom((value) => {
-            const validSources = [
-                'Social media and community discussions',
-                'News and injury reports/team news',
-                'Historical data and statistics',
-                'Expert analysis and predictions',
-                'Live game watching and analysis',
-                'Betting odds and market movements',
-                'Personal knowledge and intuition'
+            const validInfo = [
+                'Recent performance, momentum, like last 10 games record etc.',
+                'Performance with a certain amount of rest days / Schedule related factors',
+                'News and injury updates teams/players',
+                'Context based performance vs. different types of teams',
+                'Odds specific factors, spread, and the reasons why sports books set them',
+                'Sharp trader tendencies'
             ]
-            return value.every((source: string) => validSources.includes(source))
+            return value.every((info: string) => validInfo.includes(info))
         })
         .withMessage('Invalid information source selected'),
-    
-    body('question5_tradingFrequency')
-        .isIn([
-            'Multiple times per day', 'Daily', 'Few times per week',
-            'Weekly', 'Monthly', 'Occasionally'
-        ])
-        .withMessage('Invalid trading frequency'),
-    
-    body('question6_additionalExperience')
+
+    body('question5_toolsToLearn')
+        .isArray({ min: 1 })
+        .withMessage('At least one tool must be selected')
+        .custom((value) => {
+            const validTools = [
+                'Kelly criterion', 'Advanced analysis', 'Mathematical modeling',
+                'High-frequency API trading', 'No interest'
+            ]
+            return value.every((tool: string) => validTools.includes(tool))
+        })
+        .withMessage('Invalid tool selected'),
+
+    body('question6_additionalInformation')
         .optional()
         .isLength({ max: 1000 })
-        .withMessage('Additional experience must be less than 1000 characters')
+        .withMessage('Additional information must be less than 1000 characters')
 ]
 
 // Routes

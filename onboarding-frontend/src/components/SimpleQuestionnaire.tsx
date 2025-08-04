@@ -1,82 +1,85 @@
 import React, { useState } from 'react'
 
 interface OnboardingData {
-  username: string
-  question1_tradingExperience: string
-  question2_tradingGoals: string
-  question3_tradingStyle: string[]
-  question4_informationSources: string[]
-  question5_tradingFrequency: string
-  question6_additionalExperience: string
+  welcome: string
+  question1_favoriteSports: string[]
+  question2_favoriteTeamsPlayers: string
+  question3_preferredMarkets: string[]
+  question4_usefulInformation: string[]
+  question5_toolsToLearn: string[]
+  question6_additionalInformation: string
 }
 
 const questions = [
   {
     id: 0,
-    title: "Choose a username",
-    type: 'text' as const,
-    field: 'username' as keyof OnboardingData,
-    required: true
+    title: "Welcome To ESX",
+    type: 'welcome' as const,
+    field: 'welcome' as keyof OnboardingData,
+    description: "Answer a few questions to tailor your trading experience and get the most out of TradeX.",
+    required: false
   },
   {
     id: 1,
-    title: "What is your trading experience?",
-    type: 'single' as const,
-    options: ['Beginner', 'Intermediate', 'Advanced', 'Expert'],
-    field: 'question1_tradingExperience' as keyof OnboardingData
+    title: "What are your favorite sports?",
+    type: 'multiple' as const,
+    options: ['Basketball', 'Football', 'Baseball', 'Soccer/World Cup', 'Tennis', 'Esports/Gaming', 'Other'],
+    field: 'question1_favoriteSports' as keyof OnboardingData
   },
   {
     id: 2,
-    title: "What are your trading goals?",
+    title: "What are your favorite Teams/Players?",
     type: 'text' as const,
-    field: 'question2_tradingGoals' as keyof OnboardingData,
-    placeholder: "e.g., Learn the basics, Generate passive income, Build wealth..."
+    field: 'question2_favoriteTeamsPlayers' as keyof OnboardingData,
+    placeholder: "Enter up to 6 teams or players (e.g., Lakers, LeBron James, Patriots...)"
   },
   {
     id: 3,
-    title: "What is your trading style?",
+    title: "What markets do you prefer when trading sports?",
     type: 'multiple' as const,
-    options: ['Day Trading', 'Swing Trading', 'Position Trading', 'Scalping', 'Arbitrage', 'Market Making'],
-    field: 'question3_tradingStyle' as keyof OnboardingData
+    options: ['Moneyline', 'Player Props', 'Futures', 'Heads-up markets'],
+    field: 'question3_preferredMarkets' as keyof OnboardingData
   },
   {
     id: 4,
-    title: "What information sources do you use?",
+    title: "Which of the following information is most useful when making predictions in sports events?",
     type: 'multiple' as const,
     options: [
-      'Social media and community discussions',
-      'News and injury reports/team news',
-      'Historical data and statistics',
-      'Expert analysis and predictions',
-      'Live game watching and analysis'
+      'Recent performance, momentum, like last 10 games record etc.',
+      'Performance with a certain amount of rest days / Schedule related factors',
+      'News and injury updates teams/players',
+      'Context based performance vs. different types of teams',
+      'Odds specific factors, spread, and the reasons why sports books set them',
+      'Sharp trader tendencies'
     ],
-    field: 'question4_informationSources' as keyof OnboardingData
+    field: 'question4_usefulInformation' as keyof OnboardingData
   },
   {
     id: 5,
-    title: "What is your trading frequency?",
-    type: 'single' as const,
-    options: ['Multiple times per day', 'Daily', 'Few times per week', 'Weekly', 'Monthly', 'Occasionally'],
-    field: 'question5_tradingFrequency' as keyof OnboardingData
+    title: "Which tools would you like to learn more about that sharp traders use to make positive Expected Value trades?",
+    type: 'multiple' as const,
+    options: ['Kelly criterion', 'Advanced analysis', 'Mathematical modeling', 'High-frequency API trading', 'No interest'],
+    field: 'question5_toolsToLearn' as keyof OnboardingData
   },
   {
     id: 6,
-    title: "Additional trading experience (Optional)",
+    title: "Additional Information/Expectations you would like to share:",
     type: 'text' as const,
-    field: 'question6_additionalExperience' as keyof OnboardingData
+    field: 'question6_additionalInformation' as keyof OnboardingData,
+    placeholder: "Share any additional information or expectations..."
   }
 ]
 
 const SimpleQuestionnaire: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Partial<OnboardingData>>({
-    username: '',
-    question1_tradingExperience: '',
-    question2_tradingGoals: '',
-    question3_tradingStyle: [],
-    question4_informationSources: [],
-    question5_tradingFrequency: '',
-    question6_additionalExperience: ''
+    welcome: '',
+    question1_favoriteSports: [],
+    question2_favoriteTeamsPlayers: '',
+    question3_preferredMarkets: [],
+    question4_usefulInformation: [],
+    question5_toolsToLearn: [],
+    question6_additionalInformation: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
@@ -101,9 +104,12 @@ const SimpleQuestionnaire: React.FC = () => {
   }
 
   const isCurrentQuestionAnswered = () => {
+    // Welcome page doesn't need validation
+    if (question.type === 'welcome') return true
+
     const answer = answers[question.field]
     // Check if question is required
-    if (question.required || question.field === 'username') {
+    if (question.required) {
       if (question.type === 'text') return answer && answer.trim() !== ''
       if (question.type === 'multiple') return Array.isArray(answer) && answer.length > 0
       return answer && answer !== ''
@@ -125,12 +131,19 @@ const SimpleQuestionnaire: React.FC = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     try {
-      console.log('Submitting onboarding data:', answers)
+      // Prepare data without welcome field and add fixed username
+      const { welcome, ...submissionData } = answers
+      const dataToSubmit = {
+        username: 'esx_user',
+        ...submissionData
+      }
+
+      console.log('Submitting onboarding data:', dataToSubmit)
 
       const response = await fetch('http://localhost:9091/api/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers)
+        body: JSON.stringify(dataToSubmit)
       })
 
       console.log('Response status:', response.status)
@@ -243,8 +256,22 @@ const SimpleQuestionnaire: React.FC = () => {
       {/* Question */}
       <div style={questionCardStyle}>
         <h3 style={{ fontSize: '1.5rem', marginBottom: '2rem' }}>
-          {question.id}. {question.title}
+          {question.type === 'welcome' ? question.title : `${question.id}. ${question.title}`}
         </h3>
+
+        {question.type === 'welcome' && (
+          <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+            <p style={{
+              fontSize: '1.1rem',
+              color: '#d1d5db',
+              lineHeight: '1.6',
+              maxWidth: '500px',
+              margin: '0 auto'
+            }}>
+              {question.description}
+            </p>
+          </div>
+        )}
 
         {question.type === 'single' && question.options && (
           <div>
@@ -282,42 +309,22 @@ const SimpleQuestionnaire: React.FC = () => {
         )}
 
         {question.type === 'text' && (
-          <>
-            {question.field === 'username' ? (
-              <input
-                type="text"
-                value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
-                onChange={(e) => handleAnswerChange(question.field, e.target.value)}
-                placeholder="Enter your username..."
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  backgroundColor: '#374151',
-                  border: '1px solid #4b5563',
-                  borderRadius: '6px',
-                  color: '#ffffff',
-                  fontSize: '16px'
-                }}
-              />
-            ) : (
-              <textarea
-                value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
-                onChange={(e) => handleAnswerChange(question.field, e.target.value)}
-                placeholder={question.placeholder || "Enter your response..."}
-                style={{
-                  width: '100%',
-                  height: '120px',
-                  padding: '12px',
-                  backgroundColor: '#374151',
-                  border: '1px solid #4b5563',
-                  borderRadius: '6px',
-                  color: '#ffffff',
-                  fontSize: '16px',
-                  resize: 'none'
-                }}
-              />
-            )}
-          </>
+          <textarea
+            value={typeof answers[question.field] === 'string' ? answers[question.field] as string : ''}
+            onChange={(e) => handleAnswerChange(question.field, e.target.value)}
+            placeholder={question.placeholder || "Enter your response..."}
+            style={{
+              width: '100%',
+              height: '120px',
+              padding: '12px',
+              backgroundColor: '#374151',
+              border: '1px solid #4b5563',
+              borderRadius: '6px',
+              color: '#ffffff',
+              fontSize: '16px',
+              resize: 'none'
+            }}
+          />
         )}
       </div>
 

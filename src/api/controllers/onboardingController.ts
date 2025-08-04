@@ -13,26 +13,26 @@ export class OnboardingController {
 
             const {
                 username,
-                question1_tradingExperience,
-                question2_tradingGoals,
-                question3_tradingStyle,
-                question4_informationSources,
-                question5_tradingFrequency,
-                question6_additionalExperience
+                question1_favoriteSports,
+                question2_favoriteTeamsPlayers,
+                question3_preferredMarkets,
+                question4_usefulInformation,
+                question5_toolsToLearn,
+                question6_additionalInformation
             } = req.body
 
-            // Generate a random userId and username for MVP
-            const userId = uuidv4()
-            const generatedUsername = username || `user_${Date.now()}`
-            logger.info(`Generated User ID: ${userId}`)
+            // Use fixed user ID for single user approach
+            const userId = 'esx-single-user'
+            const generatedUsername = username || 'esx_user'
+            logger.info(`Using fixed User ID: ${userId}`)
             logger.info(`Username: ${generatedUsername}`)
 
             // Validate required fields
-            if (!question1_tradingExperience || !question3_tradingStyle || !question4_informationSources || !question5_tradingFrequency) {
+            if (!question1_favoriteSports || !question3_preferredMarkets || !question4_usefulInformation || !question5_toolsToLearn) {
                 logger.warn('Validation failed: Missing required fields')
                 res.status(400).json({
                     error: 'Missing required fields',
-                    required: ['question1_tradingExperience', 'question3_tradingStyle', 'question4_informationSources', 'question5_tradingFrequency']
+                    required: ['question1_favoriteSports', 'question3_preferredMarkets', 'question4_usefulInformation', 'question5_toolsToLearn']
                 })
                 return
             }
@@ -40,35 +40,35 @@ export class OnboardingController {
             logger.info('Creating onboarding document with new structure...')
 
             // Process multiple choice answers for better readability
-            const tradingStyleArray = Array.isArray(question3_tradingStyle) ? question3_tradingStyle : [question3_tradingStyle]
-            const informationSourcesArray = Array.isArray(question4_informationSources) ? question4_informationSources : [question4_informationSources]
+            const favoriteSportsArray = Array.isArray(question1_favoriteSports) ? question1_favoriteSports : [question1_favoriteSports]
+            const preferredMarketsArray = Array.isArray(question3_preferredMarkets) ? question3_preferredMarkets : [question3_preferredMarkets]
+            const usefulInformationArray = Array.isArray(question4_usefulInformation) ? question4_usefulInformation : [question4_usefulInformation]
+            const toolsToLearnArray = Array.isArray(question5_toolsToLearn) ? question5_toolsToLearn : [question5_toolsToLearn]
 
             // Create user-friendly formatted strings for multiple answers
-            const tradingStyleFormatted = tradingStyleArray.join(', ')
-            const informationSourcesFormatted = informationSourcesArray.join(', ')
+            const favoriteSportsFormatted = favoriteSportsArray.join(', ')
+            const preferredMarketsFormatted = preferredMarketsArray.join(', ')
+            const usefulInformationFormatted = usefulInformationArray.join(', ')
+            const toolsToLearnFormatted = toolsToLearnArray.join(', ')
 
             // Create new onboarding response with organized structure
             const onboardingData: Partial<ISurvey> = {
                 userId,
                 username: generatedUsername,
-                // Store in new nested responses structure with formatted strings
+                // Store in nested responses structure with formatted strings
                 responses: {
-                    question1_tradingExperience,
-                    question2_tradingGoals: question2_tradingGoals || '',
-                    question3_tradingStyle: tradingStyleFormatted,
-                    question4_informationSources: informationSourcesFormatted,
-                    question5_tradingFrequency,
-                    question6_additionalExperience: question6_additionalExperience || '',
+                    question1_favoriteSports: favoriteSportsFormatted,
+                    question2_favoriteTeamsPlayers: question2_favoriteTeamsPlayers || '',
+                    question3_preferredMarkets: preferredMarketsFormatted,
+                    question4_usefulInformation: usefulInformationFormatted,
+                    question5_toolsToLearn: toolsToLearnFormatted,
+                    question6_additionalInformation: question6_additionalInformation || '',
                     // Keep original arrays for data processing if needed
-                    question3_tradingStyle_array: tradingStyleArray,
-                    question4_informationSources_array: informationSourcesArray
-                },
-                // Also store in flat structure for backward compatibility
-                question1_tradingExperience,
-                question3_tradingStyle: tradingStyleArray,
-                question4_informationSources: informationSourcesArray,
-                question5_tradingFrequency,
-                question6_additionalExperience: question6_additionalExperience || ''
+                    question1_favoriteSports_array: favoriteSportsArray,
+                    question3_preferredMarkets_array: preferredMarketsArray,
+                    question4_usefulInformation_array: usefulInformationArray,
+                    question5_toolsToLearn_array: toolsToLearnArray
+                }
             }
 
             logger.info('Onboarding Data Created:', {
@@ -77,13 +77,19 @@ export class OnboardingController {
                 responses: onboardingData.responses
             })
 
-            const onboarding = new Onboarding(onboardingData)
-
-            // Save to database (will handle MongoDB connection issues gracefully)
+            // Update existing user or create new one (upsert)
             let savedOnboarding = null
             try {
-                savedOnboarding = await onboarding.save()
-                logger.info('Onboarding saved to database successfully', { onboardingId: savedOnboarding._id })
+                savedOnboarding = await Onboarding.findOneAndUpdate(
+                    { userId: userId }, // Find by userId
+                    onboardingData,     // Update with new data
+                    {
+                        new: true,      // Return updated document
+                        upsert: true,   // Create if doesn't exist
+                        runValidators: true
+                    }
+                )
+                logger.info('Onboarding updated/created successfully', { onboardingId: savedOnboarding._id })
             } catch (dbError) {
                 logger.warn('Database save failed, continuing without persistence', { error: dbError })
                 // Create a mock response for when DB is not available
@@ -95,7 +101,7 @@ export class OnboardingController {
             }
 
             const response = {
-                message: 'Onboarding submitted successfully',
+                message: 'Onboarding updated successfully',
                 onboardingId: savedOnboarding._id,
                 userId: savedOnboarding.userId || userId
             }
@@ -183,21 +189,23 @@ export class OnboardingController {
     public async getOnboardingStats(req: Request, res: Response): Promise<void> {
         try {
             const totalOnboardings = await Onboarding.countDocuments()
-            
-            const tradingExperienceStats = await Onboarding.aggregate([
-                { $group: { _id: '$question1_tradingExperience', count: { $sum: 1 } } },
+
+            const favoriteSportsStats = await Onboarding.aggregate([
+                { $unwind: '$responses.question1_favoriteSports_array' },
+                { $group: { _id: '$responses.question1_favoriteSports_array', count: { $sum: 1 } } },
                 { $sort: { count: -1 } }
             ])
 
-            const tradingFrequencyStats = await Onboarding.aggregate([
-                { $group: { _id: '$question5_tradingFrequency', count: { $sum: 1 } } },
+            const preferredMarketsStats = await Onboarding.aggregate([
+                { $unwind: '$responses.question3_preferredMarkets_array' },
+                { $group: { _id: '$responses.question3_preferredMarkets_array', count: { $sum: 1 } } },
                 { $sort: { count: -1 } }
             ])
 
             res.status(200).json({
                 totalOnboardings,
-                tradingExperienceDistribution: tradingExperienceStats,
-                tradingFrequencyDistribution: tradingFrequencyStats
+                favoriteSportsDistribution: favoriteSportsStats,
+                preferredMarketsDistribution: preferredMarketsStats
             })
 
         } catch (error: any) {
@@ -277,15 +285,13 @@ export class OnboardingController {
                     id: onboarding._id,
                     userId: onboarding.userId,
                     username: onboarding.username,
-                    // Use formatted strings from responses, fallback to arrays if old structure
-                    question1_tradingExperience: onboarding.responses?.question1_tradingExperience || onboarding.question1_tradingExperience,
-                    question2_tradingGoals: onboarding.responses?.question2_tradingGoals || onboarding.question2_tradingGoals,
-                    question3_tradingStyle: onboarding.responses?.question3_tradingStyle ||
-                        (Array.isArray(onboarding.question3_tradingStyle) ? onboarding.question3_tradingStyle.join(', ') : onboarding.question3_tradingStyle),
-                    question4_informationSources: onboarding.responses?.question4_informationSources ||
-                        (Array.isArray(onboarding.question4_informationSources) ? onboarding.question4_informationSources.join(', ') : onboarding.question4_informationSources),
-                    question5_tradingFrequency: onboarding.responses?.question5_tradingFrequency || onboarding.question5_tradingFrequency,
-                    question6_additionalExperience: onboarding.responses?.question6_additionalExperience || onboarding.question6_additionalExperience,
+                    // Use formatted strings from responses
+                    question1_favoriteSports: onboarding.responses?.question1_favoriteSports || '',
+                    question2_favoriteTeamsPlayers: onboarding.responses?.question2_favoriteTeamsPlayers || '',
+                    question3_preferredMarkets: onboarding.responses?.question3_preferredMarkets || '',
+                    question4_usefulInformation: onboarding.responses?.question4_usefulInformation || '',
+                    question5_toolsToLearn: onboarding.responses?.question5_toolsToLearn || '',
+                    question6_additionalInformation: onboarding.responses?.question6_additionalInformation || '',
                     responses: onboarding.responses, // Include the full responses object
                     createdAt: onboarding.createdAt,
                     updatedAt: onboarding.updatedAt

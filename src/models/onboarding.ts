@@ -3,24 +3,20 @@ import mongoose, { Document, Schema } from 'mongoose'
 export interface ISurvey extends Document {
     userId: string
     username?: string // User's display name
-    // Support both old flat structure and new nested structure
-    question1_tradingExperience?: string // What is your trading experience?
-    question2_tradingGoals?: string // What are your trading goals?
-    question3_tradingStyle?: string[] // What is your trading style? (multiple selection)
-    question4_informationSources?: string[] // What are the following information sources you use when making predictions in sports betting?
-    question5_tradingFrequency?: string // What is your trading frequency?
-    question6_additionalExperience?: string // Additional trading experience/background
     // New nested responses structure with formatted strings
     responses?: {
-        question1_tradingExperience: string
-        question2_tradingGoals?: string
-        question3_tradingStyle: string // Formatted as comma-separated string
-        question4_informationSources: string // Formatted as comma-separated string
-        question5_tradingFrequency: string
-        question6_additionalExperience?: string
+        // Sports-related responses
+        question1_favoriteSports?: string // Formatted as comma-separated string
+        question2_favoriteTeamsPlayers?: string
+        question3_preferredMarkets?: string // Formatted as comma-separated string
+        question4_usefulInformation?: string // Formatted as comma-separated string
+        question5_toolsToLearn?: string // Formatted as comma-separated string
+        question6_additionalInformation?: string
         // Keep original arrays for data processing
-        question3_tradingStyle_array?: string[]
-        question4_informationSources_array?: string[]
+        question1_favoriteSports_array?: string[]
+        question3_preferredMarkets_array?: string[]
+        question4_usefulInformation_array?: string[]
+        question5_toolsToLearn_array?: string[]
     }
     createdAt: Date
     updatedAt: Date
@@ -37,136 +33,72 @@ const surveySchema = new Schema<ISurvey>({
         required: false,
         index: true
     },
-    // Support old flat structure (optional for backward compatibility)
-    question1_tradingExperience: {
-        type: String,
-        required: false,
-        enum: [
-            'Beginner',
-            'Intermediate',
-            'Advanced',
-            'Expert'
-        ]
-    },
-    question2_tradingGoals: {
-        type: String,
-        required: false
-    },
-    // Question 3: What is your trading style? (skipping Q2 for MVP)
-    question3_tradingStyle: {
-        type: [String],
-        required: false, // Made optional for new structure
-        validate: {
-            validator: function(v: string[]) {
-                return !v || v.length > 0 // Allow empty for new structure
-            },
-            message: 'At least one trading style must be selected'
-        },
-        enum: [
-            'Day Trading',
-            'Swing Trading', 
-            'Position Trading',
-            'Scalping',
-            'Arbitrage',
-            'Market Making',
-            'Milestones', // Added as requested
-            'Value Investing' // Alternative to "Moneyline" without betting connotation
-        ]
-    },
-    // Question 4: Information sources for predictions
-    question4_informationSources: {
-        type: [String],
-        required: false, // Made optional for new structure
-        validate: {
-            validator: function(v: string[]) {
-                return !v || v.length > 0 // Allow empty for new structure
-            },
-            message: 'At least one information source must be selected'
-        },
-        enum: [
-            'Social media and community discussions',
-            'News and injury reports/team news',
-            'Historical data and statistics',
-            'Expert analysis and predictions',
-            'Live game watching and analysis',
-            'Betting odds and market movements',
-            'Personal knowledge and intuition'
-        ]
-    },
-    // Question 5: Trading frequency
-    question5_tradingFrequency: {
-        type: String,
-        required: false, // Made optional for new structure
-        enum: [
-            'Multiple times per day',
-            'Daily',
-            'Few times per week',
-            'Weekly',
-            'Monthly',
-            'Occasionally'
-        ]
-    },
-    // Question 6: Additional experience/background
-    question6_additionalExperience: {
-        type: String,
-        required: false,
-        maxlength: 1000
-    },
+
+
+
+
     // New nested responses structure
     responses: {
         type: {
-            question1_tradingExperience: {
-                type: String,
-                required: true,
-                enum: ['Beginner', 'Intermediate', 'Advanced', 'Expert']
+            question1_favoriteSports: {
+                type: String, // Formatted as comma-separated string
+                required: false
             },
-            question2_tradingGoals: {
+            question2_favoriteTeamsPlayers: {
                 type: String,
                 required: false
             },
-            question3_tradingStyle: {
-                type: String, // Now stored as formatted string
-                required: true
+            question3_preferredMarkets: {
+                type: String, // Formatted as comma-separated string
+                required: false
             },
-            question4_informationSources: {
-                type: String, // Now stored as formatted string
-                required: true
+            question4_usefulInformation: {
+                type: String, // Formatted as comma-separated string
+                required: false
+            },
+            question5_toolsToLearn: {
+                type: String, // Formatted as comma-separated string
+                required: false
+            },
+            question6_additionalInformation: {
+                type: String,
+                required: false
             },
             // Keep original arrays for data processing
-            question3_tradingStyle_array: {
+            question1_favoriteSports_array: {
                 type: [String],
                 required: false,
                 enum: [
-                    'Day Trading', 'Swing Trading', 'Position Trading',
-                    'Scalping', 'Arbitrage', 'Market Making',
-                    'Milestones', 'Value Investing'
+                    'Basketball', 'Football', 'Baseball', 'Soccer/World Cup',
+                    'Tennis', 'Esports/Gaming', 'Other'
                 ]
             },
-            question4_informationSources_array: {
+            question3_preferredMarkets_array: {
                 type: [String],
                 required: false,
                 enum: [
-                    'Social media and community discussions',
-                    'News and injury reports/team news',
-                    'Historical data and statistics',
-                    'Expert analysis and predictions',
-                    'Live game watching and analysis',
-                    'Betting odds and market movements',
-                    'Personal knowledge and intuition'
+                    'Moneyline', 'Player Props', 'Futures', 'Heads-up markets'
                 ]
             },
-            question5_tradingFrequency: {
-                type: String,
-                required: true,
-                enum: [
-                    'Multiple times per day', 'Daily', 'Few times per week',
-                    'Weekly', 'Monthly', 'Occasionally'
-                ]
-            },
-            question6_additionalExperience: {
-                type: String,
+            question4_usefulInformation_array: {
+                type: [String],
                 required: false,
-                maxlength: 1000
+                enum: [
+                    'Recent performance, momentum, like last 10 games record etc.',
+                    'Performance with a certain amount of rest days / Schedule related factors',
+                    'News and injury updates teams/players',
+                    'Context based performance vs. different types of teams',
+                    'Odds specific factors, spread, and the reasons why sports books set them',
+                    'Sharp trader tendencies'
+                ]
+            },
+            question5_toolsToLearn_array: {
+                type: [String],
+                required: false,
+                enum: [
+                    'Kelly criterion', 'Advanced analysis', 'Mathematical modeling',
+                    'High-frequency API trading', 'No interest'
+                ]
             }
         },
         required: false // Optional to support both old and new structures
