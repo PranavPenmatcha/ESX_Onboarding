@@ -7,6 +7,7 @@ import mongoose from 'mongoose'
 import { config } from './config/environment'
 import { logger } from './utils/helpers/logger'
 import onboardingRoutes from './api/routes/onboardingRoutes'
+import authRoutes from './api/routes/authRoutes'
 
 export class App {
     private app = express()
@@ -66,6 +67,7 @@ export class App {
         })
 
         // API routes
+        this.app.use('/api/auth', authRoutes)
         this.app.use('/api/onboarding', onboardingRoutes)
 
         // 404 handler

@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>ESX Onboarding</title>
+    <script>
+      // Suppress PostHog errors if they occur from browser extensions or cached data
+      window.addEventListener('error', function(e) {
+        if (e.message && e.message.includes('PostHog')) {
+          e.preventDefault();
+          console.warn('PostHog error suppressed:', e.message);
+        }
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>

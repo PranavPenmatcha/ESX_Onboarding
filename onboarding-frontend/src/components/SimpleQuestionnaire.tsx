@@ -10,6 +10,17 @@ interface OnboardingData {
   question6_additionalInformation: string
 }
 
+interface UserInfo {
+  id: string
+  username: string
+  email: string
+}
+
+interface SimpleQuestionnaireProps {
+  user?: UserInfo
+  authToken?: string
+}
+
 const questions = [
   {
     id: 0,
@@ -70,7 +81,7 @@ const questions = [
   }
 ]
 
-const SimpleQuestionnaire: React.FC = () => {
+const SimpleQuestionnaire: React.FC<SimpleQuestionnaireProps> = ({ user, authToken }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Partial<OnboardingData>>({
     welcome: '',
@@ -131,19 +142,20 @@ const SimpleQuestionnaire: React.FC = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true)
     try {
-      // Prepare data without welcome field and add fixed username
+      // Prepare data without welcome field
       const { welcome, ...submissionData } = answers
-      const dataToSubmit = {
-        username: 'esx_user',
-        ...submissionData
-      }
 
-      console.log('Submitting onboarding data:', dataToSubmit)
+      console.log('Submitting onboarding data:', submissionData)
+
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`
+      }
 
       const response = await fetch('http://localhost:9091/api/onboarding', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(dataToSubmit)
+        headers,
+        body: JSON.stringify(submissionData)
       })
 
       console.log('Response status:', response.status)
@@ -261,6 +273,17 @@ const SimpleQuestionnaire: React.FC = () => {
 
         {question.type === 'welcome' && (
           <div style={{ textAlign: 'center', padding: '4rem 2rem' }}>
+            {user && (
+              <div style={{ marginBottom: '2rem', padding: '1.5rem', backgroundColor: '#374151', borderRadius: '8px' }}>
+                <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#e7cfa1' }}>Welcome back!</h4>
+                <p style={{ fontSize: '1rem', color: '#d1d5db', marginBottom: '0.5rem' }}>
+                  <strong>Username:</strong> {user.username}
+                </p>
+                <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
+                  <strong>User ID:</strong> {user.id}
+                </p>
+              </div>
+            )}
             <p style={{
               fontSize: '1.1rem',
               color: '#d1d5db',

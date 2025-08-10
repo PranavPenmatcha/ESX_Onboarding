@@ -2,17 +2,22 @@ import { Request, Response } from 'express'
 import { Onboarding, ISurvey } from '../../models/onboarding'
 import { logger } from '../../utils/helpers/logger'
 import { v4 as uuidv4 } from 'uuid'
+import User from '../../models/user'
+
+// Extend Express Request to include user
+interface AuthenticatedRequest extends Request {
+  user?: any;
+}
 
 export class OnboardingController {
     
     // Submit a new onboarding response
-    public async submitOnboarding(req: Request, res: Response): Promise<void> {
+    public async submitOnboarding(req: AuthenticatedRequest, res: Response): Promise<void> {
         try {
             logger.info('=== NEW ONBOARDING SUBMISSION ===')
             logger.info('Request Body:', JSON.stringify(req.body, null, 2))
 
             const {
-                username,
                 question1_favoriteSports,
                 question2_favoriteTeamsPlayers,
                 question3_preferredMarkets,
@@ -21,11 +26,20 @@ export class OnboardingController {
                 question6_additionalInformation
             } = req.body
 
-            // Use fixed user ID for single user approach
-            const userId = 'esx-single-user'
-            const generatedUsername = username || 'esx_user'
-            logger.info(`Using fixed User ID: ${userId}`)
-            logger.info(`Username: ${generatedUsername}`)
+            // Get user information from authenticated request
+            const user = req.user
+            if (!user) {
+                logger.warn('No authenticated user found')
+                res.status(401).json({
+                    error: 'Authentication required'
+                })
+                return
+            }
+
+            const userId = user._id.toString()
+            const username = user.userName
+            logger.info(`Using authenticated User ID: ${userId}`)
+            logger.info(`Username: ${username}`)
 
             // Validate required fields
             if (!question1_favoriteSports || !question3_preferredMarkets || !question4_usefulInformation || !question5_toolsToLearn) {
@@ -54,7 +68,7 @@ export class OnboardingController {
             // Create new onboarding response with organized structure
             const onboardingData: Partial<ISurvey> = {
                 userId,
-                username: generatedUsername,
+                username: username,
                 // Store in nested responses structure with formatted strings
                 responses: {
                     question1_favoriteSports: favoriteSportsFormatted,
@@ -73,7 +87,7 @@ export class OnboardingController {
 
             logger.info('Onboarding Data Created:', {
                 userId,
-                username: generatedUsername,
+                username: username,
                 responses: onboardingData.responses
             })
 
@@ -90,6 +104,14 @@ export class OnboardingController {
                     }
                 )
                 logger.info('Onboarding updated/created successfully', { onboardingId: savedOnboarding._id })
+
+                // Mark user as having completed onboarding
+                try {
+                    await User.findByIdAndUpdate(userId, { hasCompletedOnboarding: true })
+                    logger.info('User marked as having completed onboarding', { userId })
+                } catch (userUpdateError) {
+                    logger.warn('Failed to update user onboarding status', { error: userUpdateError })
+                }
             } catch (dbError) {
                 logger.warn('Database save failed, continuing without persistence', { error: dbError })
                 // Create a mock response for when DB is not available

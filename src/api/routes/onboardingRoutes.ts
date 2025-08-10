@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { OnboardingController } from '../controllers/onboardingController'
 import { body, param, query, validationResult } from 'express-validator'
 import { Request, Response, NextFunction } from 'express'
+import { simpleAuth } from '../middlewares/simpleAuth'
 
 const router = Router()
 const onboardingController = new OnboardingController()
@@ -84,8 +85,9 @@ const onboardingValidationRules = [
 
 // Routes
 
-// POST /api/onboarding - Submit a new onboarding
-router.post('/', 
+// POST /api/onboarding - Submit a new onboarding (requires authentication)
+router.post('/',
+    simpleAuth(),
     onboardingValidationRules,
     handleValidationErrors,
     async (req: Request, res: Response) => {
