@@ -8,6 +8,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Font families for the design */
+.font-geist {
+  font-family: 'Inter', 'Geist', system-ui, sans-serif;
+}
+
+.font-lexend {
+  font-family: 'Lexend', system-ui, sans-serif;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -15,7 +36,7 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #111827;
+  background-color: #202020;
   color: #ffffff;
 }
 
