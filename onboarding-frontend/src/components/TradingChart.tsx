@@ -102,8 +102,44 @@ const TradingChart: React.FC = () => {
       width: '100%',
       height: '400px',
       maxWidth: '1200px',
-      margin: '0 auto'
+      margin: '0 auto',
+      backgroundColor: '#202020',
+      borderRadius: '12px',
+      padding: '20px'
     }}>
+      {/* Grid lines */}
+      <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
+        {/* Horizontal grid lines */}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((line) => (
+          <line
+            key={`h-${line}`}
+            x1="60"
+            y1={`${60 + (line * 200) / 8}px`}
+            x2="calc(100% - 60px)"
+            y2={`${60 + (line * 200) / 8}px`}
+            stroke="#333"
+            strokeWidth="1"
+            strokeDasharray="5,5"
+            opacity="0.3"
+          />
+        ))}
+
+        {/* Vertical grid lines */}
+        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((line) => (
+          <line
+            key={`v-${line}`}
+            x1={`${60 + (line * (100 - 120)) / 10}%`}
+            y1="60"
+            x2={`${60 + (line * (100 - 120)) / 10}%`}
+            y2="260"
+            stroke="#333"
+            strokeWidth="1"
+            strokeDasharray="5,5"
+            opacity="0.2"
+          />
+        ))}
+      </svg>
+
       {/* Y-axis labels */}
       <div style={{ position: 'absolute', right: '20px', top: '20px', color: '#CACACA', fontSize: '14px', fontFamily: 'Inter', fontWeight: '500' }}>80%</div>
       <div style={{ position: 'absolute', right: '20px', top: '50px', color: '#CACACA', fontSize: '14px', fontFamily: 'Inter', fontWeight: '500' }}>70%</div>
@@ -124,18 +160,19 @@ const TradingChart: React.FC = () => {
         height: '200px',
         display: 'flex',
         alignItems: 'flex-end',
-        gap: '2px',
+        gap: '3px',
         overflow: 'hidden'
       }}>
         {chartBars.map((bar, index) => (
           <div
             key={index}
             style={{
-              width: '12px',
-              height: `${Math.min(bar.height * 2, 180)}px`,
+              width: '16px',
+              height: `${Math.min(bar.height * 2.2, 180)}px`,
               backgroundColor: bar.color,
               flex: '0 0 auto',
-              opacity: 0.8
+              opacity: 0.9,
+              borderRadius: '1px'
             }}
           />
         ))}
