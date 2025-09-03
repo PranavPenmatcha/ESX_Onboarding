@@ -422,30 +422,32 @@ const SimpleQuestionnaire: React.FC<SimpleQuestionnaireProps> = ({ user, authTok
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '4rem 2rem 2rem',
-            backgroundColor: '#202020'
+            justifyContent: 'flex-start', // Changed from center to flex-start
+            padding: '2rem',
+            backgroundColor: '#202020',
+            overflow: 'visible' // Changed from hidden to visible
           }}>
-            {/* Main Welcome Content */}
+            {/* Main Welcome Content - Moved to top third */}
             <div style={{
               textAlign: 'center',
               zIndex: 2,
-              animation: 'fadeInUp 1s ease-out',
-              flex: '1',
+              maxWidth: '800px',
+              margin: '0 auto',
+              paddingTop: '8vh', // Moved to top third of viewport
+              height: '33vh', // Takes up top third of viewport
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center'
+              justifyContent: 'center'
             }}>
               {/* Welcome to ESX Title */}
               <h1 style={{
                 color: '#E7CFA1',
-                fontSize: '4rem',
-                fontFamily: 'Inter, sans-serif',
+                fontSize: '48px', // Smaller to fit in top third
+                fontFamily: 'Geist, Inter, sans-serif',
                 fontWeight: '800',
-                lineHeight: '1.1',
-                marginBottom: '1.5rem',
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)'
+                lineHeight: '45px',
+                marginBottom: '1rem', // Tighter spacing
+                letterSpacing: '-0.02em'
               }}>
                 Welcome to ESX
               </h1>
@@ -453,58 +455,56 @@ const SimpleQuestionnaire: React.FC<SimpleQuestionnaireProps> = ({ user, authTok
               {/* Tagline */}
               <p style={{
                 color: '#F4DDB4',
-                fontSize: '1.5rem',
-                fontFamily: 'Inter, sans-serif',
+                fontSize: '20px', // Smaller to fit
+                fontFamily: 'Geist, Inter, sans-serif',
                 fontWeight: '400',
-                lineHeight: '1.5',
-                marginBottom: '2rem'
+                lineHeight: '24px',
+                marginBottom: '1rem' // Tighter spacing
               }}>
                 Where smart fans trade like pros.
               </p>
 
               {/* Description */}
               <div style={{
-                maxWidth: '600px',
-                margin: '0 auto',
-                marginBottom: '3rem'
+                marginBottom: '1.5rem' // Tighter spacing
               }}>
                 <span style={{
                   color: '#CCCCCC',
-                  fontSize: '1rem',
+                  fontSize: '14px', // Smaller to fit
                   fontFamily: 'Lexend, Inter, sans-serif',
                   fontWeight: '400',
-                  lineHeight: '1.5'
+                  lineHeight: '20px'
                 }}>
                   Answer a few questions to tailor your trading experience, get the most out of ESX, and{' '}
                 </span>
                 <span style={{
                   color: '#CCCCCC',
-                  fontSize: '1rem',
+                  fontSize: '14px', // Smaller to fit
                   fontFamily: 'Lexend, Inter, sans-serif',
                   fontWeight: '700',
-                  lineHeight: '1.5'
+                  lineHeight: '20px'
                 }}>
                   win a prize!
                 </span>
               </div>
 
-              {/* Start Now Button - Moved here */}
+              {/* Start Now Button */}
               <button
                 onClick={handleNext}
                 disabled={!isCurrentQuestionAnswered() || isSubmitting}
                 style={{
                   backgroundColor: '#ffffff',
                   color: '#09090B',
-                  padding: '14px 32px',
+                  padding: '10px 22px',
                   border: 'none',
-                  borderRadius: '14px',
-                  fontSize: '16.5px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
                   fontFamily: 'Lexend, Inter, sans-serif',
                   fontWeight: '700',
+                  lineHeight: '24px',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                   transition: 'all 0.3s ease',
-                  marginBottom: '2rem'
+                  marginBottom: '0' // No bottom margin needed
                 }}
                 onMouseEnter={(e) => {
                   if (!(!isCurrentQuestionAnswered() || isSubmitting)) {
@@ -514,40 +514,45 @@ const SimpleQuestionnaire: React.FC<SimpleQuestionnaireProps> = ({ user, authTok
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)'
-                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)'
+                  e.currentTarget.style.boxShadow = 'none'
                 }}
               >
-                {isSubmitting ? 'Submitting...' : 'Start Now →'}
+                {isSubmitting ? 'Submitting...' : 'Start Now→'}
               </button>
 
               {/* User Info (if logged in) */}
               {user && (
                 <div style={{
-                  padding: '1.5rem',
+                  padding: '1rem', // Smaller padding
                   backgroundColor: 'rgba(55, 65, 81, 0.8)',
-                  borderRadius: '12px',
+                  borderRadius: '8px', // Smaller radius
                   border: '1px solid #F3CA9A',
                   backdropFilter: 'blur(10px)',
-                  zIndex: 2
+                  zIndex: 2,
+                  marginBottom: '1rem', // Smaller margin
+                  fontSize: '14px' // Smaller text
                 }}>
-                  <h4 style={{ fontSize: '1.3rem', marginBottom: '1rem', color: '#e7cfa1' }}>Welcome back!</h4>
-                  <p style={{ fontSize: '1rem', color: '#d1d5db', marginBottom: '0.5rem' }}>
+                  <h4 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#e7cfa1' }}>Welcome back!</h4>
+                  <p style={{ fontSize: '0.9rem', color: '#d1d5db', marginBottom: '0.25rem' }}>
                     <strong>Username:</strong> {user.username}
                   </p>
-                  <p style={{ fontSize: '0.9rem', color: '#9ca3af' }}>
+                  <p style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
                     <strong>User ID:</strong> {user.id}
                   </p>
                 </div>
               )}
             </div>
 
-            {/* Trading Chart Graphic at Bottom */}
+            {/* Trading Chart Graphic - Fixed positioning and visibility */}
             <div style={{
-              width: '100%',
-              marginTop: 'auto',
-              zIndex: 1,
-              transform: 'scale(0.8)',
-              transformOrigin: 'center bottom'
+              position: 'absolute',
+              bottom: '5vh',
+              left: '0',
+              right: '0',
+              height: '40vh',
+              zIndex: 0, // Behind content but visible
+              opacity: '0.8',
+              pointerEvents: 'none' // Prevent interference with other elements
             }}>
               <TradingChart />
             </div>
